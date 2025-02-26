@@ -15,9 +15,16 @@ pub fn router(uri: &str, stream: TcpStream) {
 
     if Path::new(&file_path).exists() {
         // ファイルをバイナリで読む
-        let contents = fs::read(&file_path).unwrap();
-        let mime_type = from_path(&file_path).first_or_octet_stream();
-        send_binary_response(200, stream, &contents, &mime_type);
+        let contents = fs::read(&file_path);
+
+        if let Ok(contents) = contents {
+            let mime_type = from_path(&file_path).first_or_octet_stream();
+            send_binary_response(200, stream, &contents, &mime_type);
+        } else {
+            let response = plain_text_factory("500 Internal Server Error");
+            send_response(500, stream, &response);
+        }
+        
     } else {
         let response = plain_text_factory( "404 Not Found");
         send_response(404, stream, &response);
