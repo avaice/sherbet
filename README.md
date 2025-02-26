@@ -1,4 +1,4 @@
-# sharbet
+# sherbet
 
 A simple web server that serves static files wrritten in Rust.
 
