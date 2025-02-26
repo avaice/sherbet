@@ -7,6 +7,8 @@ use crate::ping::handle_client;
 use std::net::TcpListener;
 use dotenvy::dotenv;
 
+pub static SERVER_VERSION: &str = env!("CARGO_PKG_VERSION");
+
 fn main() {
 
     // Load environment variables from .env file
