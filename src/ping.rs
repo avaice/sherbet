@@ -1,5 +1,6 @@
 use std::io::{prelude::*, BufReader};
 use std::net::TcpStream;
+use crate::factory::plain_text_factory;
 use crate::pong::send_response;
 
 pub fn handle_client(mut stream: TcpStream) {
@@ -11,14 +12,13 @@ pub fn handle_client(mut stream: TcpStream) {
     // let uri = request_line.split_whitespace().nth(1).unwrap();
 
     if method != "GET" {
-        let response = "HTTP/1.1 405 Method Not Allowed\r\n\r\n";
-        send_response(stream, response);
+        send_response(405, stream, "");
         println!("Unsupported method: {}", method);
         return;
     }
 
     println!("Request: {}", request_line);
 
-    let response = "HTTP/1.1 200 OK\r\nContent-Length: 19\r\n\r\nHello, Rust server!";
-    send_response(stream, response);
+    let response = plain_text_factory("Pong!");
+    send_response(200, stream, &response);
 }
