@@ -8,17 +8,22 @@ pub fn handle_client(mut stream: TcpStream) {
     let mut request_line = String::new();
     reader.read_line(&mut request_line).unwrap();
 
-    let method = request_line.split_whitespace().next().unwrap();
-    let uri = request_line.split_whitespace().nth(1).unwrap();
+    let method = request_line.split_whitespace().next();
+    let uri = request_line.split_whitespace().nth(1);
 
-    if method != "GET" {
-        send_response(405, stream, "");
-        println!("Unsupported method: {}", method);
+    if let (Some(method), Some(uri)) = (method, uri) {
+        if method != "GET" {
+            send_response(405, stream, "");
+            println!("Unsupported method: {}", method);
+            return;
+        }
+    
+        println!("Request: {}", request_line);
+    
+        router(uri, stream);
+    } else {
+        send_response(400, stream, "");
         return;
     }
-
-    println!("Request: {}", request_line);
-
-    router(uri, stream);
 
 }

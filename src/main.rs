@@ -21,7 +21,8 @@ fn main() {
     println!("Listening on port {}", http_port);
 
     for stream in listener.incoming() {
-        let stream = stream.unwrap();
-        handle_client(stream);
+        if let Ok(stream) = stream {
+            handle_client(stream);
+        }
     }
 }
