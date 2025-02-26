@@ -1,5 +1,6 @@
 mod ping;
 mod pong;
+mod factory;
 
 use std::env;
 use crate::ping::handle_client;
