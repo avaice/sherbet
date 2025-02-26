@@ -10,6 +10,7 @@ use dotenvy::dotenv;
 
 pub static SERVER_VERSION: &str = env!("CARGO_PKG_VERSION");
 
+
 fn main() {
 
     // Load environment variables from .env file

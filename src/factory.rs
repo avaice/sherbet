@@ -1,6 +1,6 @@
 use crate::SERVER_VERSION;
 
-fn header_factory() -> String {
+pub fn header_factory() -> String {
     let version = SERVER_VERSION;
     return format!("Server: sharbet/{}\r\n", version);
 }

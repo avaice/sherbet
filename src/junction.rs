@@ -1,19 +1,25 @@
-use std::net::TcpStream;
 
-use crate::{factory::plain_text_factory, pong::send_response};
+use std::{env, fs, net::TcpStream, path::Path};
+
+use mime_guess::from_path;
+
+use crate::{factory::plain_text_factory, pong::{send_binary_response, send_response}};
 
 pub fn router(uri: &str, stream: TcpStream) {
-    if uri == "/" {
-        let response = plain_text_factory("melted sherbet");
-        send_response(200, stream, &response);
-    } else if uri == "/hello" {
-        let response = plain_text_factory("Greetings!");
-        send_response(200, stream, &response);
-    } else if uri == "/today" {
-        let today = "Today is a great day!";
-        let response = plain_text_factory(&today);
-        send_response(200, stream, &response);
-    } else{
-        send_response(404, stream, "");
+    let static_dir = env::var("STATIC_DIR").unwrap_or("public".to_string()); 
+    let file_path = if uri == "/" {
+        format!("{}/index.html", static_dir)
+    } else {
+        format!("{}{}", static_dir, uri)
+    };
+
+    if Path::new(&file_path).exists() {
+        // ファイルをバイナリで読む
+        let contents = fs::read(&file_path).unwrap();
+        let mime_type = from_path(&file_path).first_or_octet_stream();
+        send_binary_response(200, stream, &contents, &mime_type);
+    } else {
+        let response = plain_text_factory( "404 Not Found");
+        send_response(404, stream, &response);
     }
 }
