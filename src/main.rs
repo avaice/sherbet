@@ -1,7 +1,8 @@
-mod handler;
+mod ping;
+mod pong;
 
 use std::env;
-use crate::handler::handle_client;
+use crate::ping::handle_client;
 use std::net::TcpListener;
 use dotenvy::dotenv;
 
