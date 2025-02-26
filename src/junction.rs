@@ -4,7 +4,8 @@ use crate::{factory::plain_text_factory, pong::{send_binary_response, send_respo
 
 pub fn router(uri: &str, stream: TcpStream) {
     let static_dir = env::var("STATIC_DIR").unwrap_or("public".to_string());
-    let static_dir = Path::new(&static_dir).canonicalize().unwrap();
+    let static_dir = Path::new(&static_dir).canonicalize()
+        .expect("Failed to canonicalize static directory");
 
     let file_path = if uri == "/" {
         static_dir.join("index.html")
