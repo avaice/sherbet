@@ -1,6 +1,6 @@
 use std::io::{prelude::*, BufReader};
 use std::net::TcpStream;
-use crate::factory::plain_text_factory;
+use crate::junction::router;
 use crate::pong::send_response;
 
 pub fn handle_client(mut stream: TcpStream) {
@@ -9,7 +9,7 @@ pub fn handle_client(mut stream: TcpStream) {
     reader.read_line(&mut request_line).unwrap();
 
     let method = request_line.split_whitespace().next().unwrap();
-    // let uri = request_line.split_whitespace().nth(1).unwrap();
+    let uri = request_line.split_whitespace().nth(1).unwrap();
 
     if method != "GET" {
         send_response(405, stream, "");
@@ -19,6 +19,6 @@ pub fn handle_client(mut stream: TcpStream) {
 
     println!("Request: {}", request_line);
 
-    let response = plain_text_factory("Pong!");
-    send_response(200, stream, &response);
+    router(uri, stream);
+
 }
