@@ -6,7 +6,13 @@ use crate::pong::send_response;
 pub fn handle_client(mut stream: TcpStream) {
     let mut reader = BufReader::new(&mut stream);
     let mut request_line = String::new();
-    reader.read_line(&mut request_line).unwrap();
+    
+    let read_line = reader.read_line(&mut request_line);
+
+    if let Err(_) = read_line {
+        send_response(400, stream, "");
+        return;
+    }
 
     let method = request_line.split_whitespace().next();
     let uri = request_line.split_whitespace().nth(1);
