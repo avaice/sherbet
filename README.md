@@ -16,3 +16,17 @@ $ sharbet
 ```sh
 $ cargo build --release
 ```
+
+## sherbet script
+
+sherbet scriptでは、API開発に必要な機能を提供します。
+
+- ユーザー認証
+- DB操作
+- HTTP通信
+- ログ出力
+- JSON操作
+- 簡単な処理系
+  - if文
+  - for文
+  - 変数
