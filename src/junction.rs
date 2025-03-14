@@ -42,7 +42,7 @@ pub fn router(uri: &str, stream: TcpStream) {
             if let Ok(contents) = fs::read(&canon_path) {
                 // if ext is .ss, run sherbet script (not implemented)
                 if canon_path.extension().unwrap() == "ss" {
-                    let response = plain_text_factory("501 Not Implemented");
+                    let response = runner(&contents);
                     send_response(uri, 501, stream, &response);
                     return;
                 }
