@@ -1,16 +1,16 @@
-use std::io::{prelude::*, BufReader};
-use std::net::TcpStream;
 use crate::junction::router;
 use crate::pong::send_response;
+use std::io::{prelude::*, BufReader};
+use std::net::TcpStream;
 
 pub fn handle_client(mut stream: TcpStream) {
     let mut reader = BufReader::new(&mut stream);
     let mut request_line = String::new();
-    
+
     let read_line = reader.read_line(&mut request_line);
 
     if let Err(_) = read_line {
-        send_response(400, stream, "");
+        send_response("handling error", 400, stream, "");
         return;
     }
 
@@ -19,17 +19,16 @@ pub fn handle_client(mut stream: TcpStream) {
 
     if let (Some(method), Some(uri)) = (method, uri) {
         if method != "GET" {
-            send_response(405, stream, "");
+            send_response(uri, 405, stream, "");
             println!("Unsupported method: {}", method);
             return;
         }
-    
-        println!("Request: {}", request_line);
-    
+
+        // println!("Request: {}", request_line);
+
         router(uri, stream);
     } else {
-        send_response(400, stream, "");
+        send_response("uri parse error", 400, stream, "");
         return;
     }
-
 }

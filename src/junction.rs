@@ -17,6 +17,16 @@ pub fn router(uri: &str, stream: TcpStream) {
         static_dir.join(uri.trim_start_matches('/'))
     };
 
+    if !uri.contains(".") {
+        // check exists .ss
+        let new_uri = format!("{}.ss", uri);
+        let new_path = static_dir.join(&new_uri.trim_start_matches('/'));
+        if new_path.exists() {
+            router(&new_uri, stream);
+            return;
+        }
+    }
+
     if let Ok(canon_path) = file_path.canonicalize() {
         if canon_path.starts_with(&static_dir) {
             if canon_path.is_dir() {
@@ -30,18 +40,25 @@ pub fn router(uri: &str, stream: TcpStream) {
             }
 
             if let Ok(contents) = fs::read(&canon_path) {
+                // if ext is .ss, run sherbet script (not implemented)
+                if canon_path.extension().unwrap() == "ss" {
+                    let response = plain_text_factory("501 Not Implemented");
+                    send_response(uri, 501, stream, &response);
+                    return;
+                }
+
                 let mime_type = from_path(&canon_path).first_or_octet_stream();
                 send_binary_response(200, stream, &contents, &mime_type);
             } else {
                 let response = plain_text_factory("500 Internal Server Error");
-                send_response(500, stream, &response);
+                send_response(uri,500, stream, &response);
             }
         } else {
             let response = plain_text_factory("403 Forbidden");
-            send_response(403, stream, &response);
+            send_response(uri,403, stream, &response);
         }
     } else {
         let response = plain_text_factory("404 Not Found");
-        send_response(404, stream, &response);
+        send_response(uri,404, stream, &response);
     }
 }
