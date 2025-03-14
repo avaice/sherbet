@@ -1,6 +1,7 @@
 use crate::{
-    factory::plain_text_factory,
+    factory::{json_factory, plain_text_factory},
     pong::{send_binary_response, send_response},
+    script::runner::runner,
 };
 use mime_guess::from_path;
 use std::{env, fs, net::TcpStream, path::Path};
@@ -42,23 +43,26 @@ pub fn router(uri: &str, stream: TcpStream) {
             if let Ok(contents) = fs::read(&canon_path) {
                 // if ext is .ss, run sherbet script (not implemented)
                 if canon_path.extension().unwrap() == "ss" {
-                    let response = runner(&contents);
-                    send_response(uri, 501, stream, &response);
-                    return;
+                    let json = runner(&contents);
+                    if let Some(json) = json {
+                        let response = json_factory(&json);
+                        send_response(uri, 200, stream, &response);
+                        return;
+                    }
                 }
 
                 let mime_type = from_path(&canon_path).first_or_octet_stream();
                 send_binary_response(200, stream, &contents, &mime_type);
             } else {
                 let response = plain_text_factory("500 Internal Server Error");
-                send_response(uri,500, stream, &response);
+                send_response(uri, 500, stream, &response);
             }
         } else {
             let response = plain_text_factory("403 Forbidden");
-            send_response(uri,403, stream, &response);
+            send_response(uri, 403, stream, &response);
         }
     } else {
         let response = plain_text_factory("404 Not Found");
-        send_response(uri,404, stream, &response);
+        send_response(uri, 404, stream, &response);
     }
 }

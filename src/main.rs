@@ -2,6 +2,7 @@ mod ping;
 mod pong;
 mod factory;
 mod junction;
+mod script;
 
 use std::env;
 use crate::ping::handle_client;
