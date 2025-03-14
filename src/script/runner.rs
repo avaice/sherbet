@@ -16,6 +16,13 @@ pub fn runner(src: &[u8]) -> Option<String> {
         // match first token safely
         if let Some(&first_token) = tokens.first() {
             match first_token {
+                "print" => {
+                    if tokens.len() == 0 {
+                        return Some("print command needs an argument".to_string());
+                    } else {
+                        println!("{}", tokens[1..].join(" "));
+                    }
+                }
                 "return" => {
                     if tokens.len() == 0 {
                         return None;
